@@ -1,93 +1,159 @@
-const $passwordLength = document.querySelector("#length");
-const $currentPasswordLength = document.querySelector(".selected-length");
-const $hasUppercase = document.querySelector("#uppercase")
-const $hasLowercase = document.querySelector("#lowercase")
-const $hasNumbers = document.querySelector("#numbers")
-const $hasSymbols = document.querySelector("#symbols")
-const $submit = document.querySelector("button")
+const $generatedPassword = document.querySelector(".generated-password");
+const $selectedLength = document.querySelector(".selected-length");
+const $rangeInput = document.querySelector("#length");
+const $clipboardButton = document.querySelector(".copy-to-clipboard-btn");
 
-console.log($submit)
+// Checkboxes
+const $includeUpperCase = document.querySelector("#uppercase");
+const $includeLowerCase = document.querySelector("#lowercase");
+const $includeNumbers = document.querySelector("#numbers");
+const $includeSymbols = document.querySelector("#symbols");
 
+// Strength indicators
+const $tooWeakIndicator = document.querySelector(".indicator-1");
+const $weakIndicator = document.querySelector(".indicator-2");
+const $mediumIndicator = document.querySelector(".indicator-3");
+const $strongIndicator = document.querySelector(".indicator-4");
 
-// console.log(generateUppercasePassword($currentPasswordLength.value))
+// Strength
+const $strengthText = document.querySelector(".strength-indicator");
 
+// Checkbox state
+let UpperCaseOn = false;
+let LowerCaseOn = false;
+let NumbersOn = false;
+let SymbolsOn = false;
 
-    // function generatePassword(length, hasUppercase, hasLowercase, hasNumbers, hasSymbols) {
-    //     let result = ""
+let checkboxLevel = 0;
 
-    //     const symbols = "&#(-_^@$*!/"
-    //     const numbers = "1234567890"
-    //     const letters = "abcdefghijklmnopqrstuvwxyz"
+// Current password length
+let currentLength = 10;
 
-    //     let parameters = ""
+// Password generator
+function generatePassword(length) {
+    let result = "";
+    let parameters = "";
 
-    //     if (hasUppercase) {
-    //         parameters += letters.toUpperCase()
-    //     }
+    const characters = "abcdefghijklmnopqrstuvwxyz";
+    const uppercaseCharacters = characters.toUpperCase();
+    const numbers = "1234567890";
+    const symbols = " !#$%&'()*+,-./:;<=>?@[]^_`{|}~";
 
-    //     if (hasLowercase) {
-    //         parameters += letters.toLowerCase()
-    //     }
+    checkboxLevel = 0;
+    parameters = "";
 
-    //     if (hasSymbols) {
-    //         parameters += symbols
-    //     }
+    if (UpperCaseOn) {
+        parameters += uppercaseCharacters;
+        checkboxLevel++;
+    }
+    if (LowerCaseOn) {
+        parameters += characters;
+        checkboxLevel++;
+    }
+    if (NumbersOn) {
+        parameters += numbers;
+        checkboxLevel++;
+    }
+    if (SymbolsOn) {
+        parameters += symbols;
+        checkboxLevel++;
+    }
 
-    //     if (hasNumbers) {
-    //         parameters += numbers
-    //     }
+    if (parameters.length === 0) {
+        $generatedPassword.textContent = "Veuillez sélectionner au moins un paramètre";
+        return;
+    }
 
-    //     for (let i = 0; i < length; i++) {
-    //         const randomInd = Math.floor(Math.random() * parameters.length);
-    //         result += parameters.charAt(randomInd);
-    //     }
+    for (let i = 0; i < length; i++) {
+        result += parameters.charAt(Math.floor(Math.random() * parameters.length));
+    }
 
-    //     return result
-    // }
-// console.log(generateLowercasePassword($currentPasswordLength.value))
+    $generatedPassword.textContent = result;
+    passwordStrength();
+}
 
+// Password strength
+function passwordStrength() {
+    if (currentLength <= 5 && checkboxLevel <= 1) {
+        $strengthText.textContent = "Too weak";
+        $tooWeakIndicator.classList.add("indicator-too-weak");
+        $weakIndicator.classList.remove("indicator-weak");
+        $mediumIndicator.classList.remove("indicator-medium");
+        $strongIndicator.classList.remove("indicator-strong");
+    } else if (currentLength <= 10 && checkboxLevel <= 2) {
+        $strengthText.textContent = "Weak";
+        $tooWeakIndicator.classList.add("indicator-too-weak");
+        $weakIndicator.classList.add("indicator-weak");
+        $mediumIndicator.classList.remove("indicator-medium");
+        $strongIndicator.classList.remove("indicator-strong");
+    } else if (currentLength <= 15 && checkboxLevel <= 3) {
+        $strengthText.textContent = "Medium";
+        $tooWeakIndicator.classList.add("indicator-too-weak");
+        $weakIndicator.classList.add("indicator-weak");
+        $mediumIndicator.classList.add("indicator-medium");
+        $strongIndicator.classList.remove("indicator-strong");
+    } else if (currentLength > 15 && checkboxLevel > 3) {
+        $strengthText.textContent = "Strong";
+        $tooWeakIndicator.classList.add("indicator-too-weak");
+        $weakIndicator.classList.add("indicator-weak");
+        $mediumIndicator.classList.add("indicator-medium");
+        $strongIndicator.classList.add("indicator-strong");
+    }
+}
 
-// console.log(generatePassword(15, true, false, true, true))
+// Checkbox listeners
+$includeUpperCase.addEventListener("change", function () {
+    UpperCaseOn = this.checked;
+});
 
-// Quand j'appuie sur genetare,
-    // Ca m'appelle la fonction generatePassWord
-    // Ca met à jour le DOM
+$includeLowerCase.addEventListener("change", function () {
+    LowerCaseOn = this.checked;
+});
 
+$includeNumbers.addEventListener("change", function () {
+    NumbersOn = this.checked;
+});
 
-    $submit.addEventListener("click", function(length, hasUppercase, hasLowercase, hasNumbers, hasSymbols) {
-        let result = ""
+$includeSymbols.addEventListener("change", function () {
+    SymbolsOn = this.checked;
+});
 
-        const symbols = "&#(-_^@$*!/"
-        const numbers = "1234567890"
-        const letters = "abcdefghijklmnopqrstuvwxyz"
+$selectedLength.textContent = $rangeInput.value;
 
-        let parameters = ""
+$rangeInput.addEventListener("input", function (e) {
+    $selectedLength.textContent = e.target.value;
+    currentLength = e.target.value;
+});
 
-        if (hasUppercase) {
-            parameters += letters.toUpperCase()
-        }
+// Clipboard button
+$clipboardButton.addEventListener("click", function () {
+    const text = $generatedPassword.textContent;
 
-        if (hasLowercase) {
-            parameters += letters.toLowerCase()
-        }
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Copied password: " + text);
+        });
+    } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("Copied password: " + text);
+    }
+});
 
-        if (hasSymbols) {
-            parameters += symbols
-        }
+// Submit
+const $submit = document.querySelector("button[type='submit']");
 
-        if (hasNumbers) {
-            parameters += numbers
-        }
+$submit.addEventListener("click", function (e) {
+    e.preventDefault();
+    generatePassword(currentLength);
+});
 
-        for (let i = 0; i < length; i++) {
-            const randomInd = Math.floor(Math.random() * parameters.length);
-            result += parameters.charAt(randomInd);
-        }
-
-    })
-
-    // onclick="generatePassword(10, true, true, true, true)"
-
-$passwordLength.addEventListener("input", function(e) {
-    $currentPasswordLength.textContent = e.target.value
-})
+// Initial password generation on page load
+document.addEventListener("DOMContentLoaded", function () {
+    generatePassword(currentLength);
+});

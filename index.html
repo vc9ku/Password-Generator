@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Document</title>
+    <title>Password Generator</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,7 +44,14 @@
             <label for="length">Character length</label>
             <span class="selected-length">10</span>
           </div>
-          <input id="length" name="length" type="range" min="0" max="20" />
+          <input
+            id="length"
+            name="length"
+            type="range"
+            min="1"
+            max="20"
+            value="10"
+          />
         </div>
         <div class="checkboxes-wrapper">
           <div class="checkbox-group">
@@ -69,10 +76,10 @@
           <div class="strength-indicator-wrapper">
             <span class="strength-indicator">Medium</span>
             <ul class="indicators">
-                <li class="indicator indicator-1 indicator-too-weak"></li>
-                <li class="indicator indicator-2 indicator-weak"></li>
-                <li class="indicator indicator-3 indicator-medium"></li>
-                <li class="indicator indicator-4 indicator-strong"></li>
+              <li class="indicator indicator-1 indicator-too-weak"></li>
+              <li class="indicator indicator-2 indicator-weak"></li>
+              <li class="indicator indicator-3 indicator-medium"></li>
+              <li class="indicator indicator-4 indicator-strong"></li>
             </ul>
           </div>
         </div>
@@ -94,6 +101,6 @@
         </button>
       </form>
     </main>
+    <script src="./js/app.js"></script>
   </body>
-  <script src="./js/app.js"></script>
 </html>
